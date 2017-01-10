@@ -1,5 +1,11 @@
-var KeyInput = function(config) {
-	this.target = (typeof config == "array" && config.target !== undefined ? config.target : document);
+var KeyInput = function(initconfig) {
+	initconfig = initconfig || {};
+	
+	this.config = {
+		target: initconfig.target || window,
+		releaseOnBlur: initconfig.releaseOnBlur || true,
+		requestFocus: initconfig.requestFocus || true,
+	};
 	
 	this.keystatesPress = new Array(256);
 	this.keystatesRelease = new Array(256);
@@ -19,7 +25,6 @@ var KeyInput = function(config) {
 	// public methods
 	this.isKeyDown = function(key, duration) {
 		var duration = duration || 0;
-		
 		return this.keystatesPress[key] > this.keystatesRelease[key] + duration;
 	};
 	this.isKeyUp = function(key, duration) {
@@ -37,7 +42,7 @@ var KeyInput = function(config) {
 	// private code
 	
 	// on keydown
-	this.target.addEventListener('keydown', function(e) {
+	this.config.target.addEventListener('keydown', function(e) {
 		var key = e.keyCode;
 		
 		// allow f keys
@@ -51,7 +56,7 @@ var KeyInput = function(config) {
 	}, true);
 	
 	// on keyup
-	this.target.addEventListener('keyup', function(e) {		
+	this.config.target.addEventListener('keyup', function(e) {		
 		var key = e.keyCode;
 		
 		// allow f keys
@@ -62,17 +67,22 @@ var KeyInput = function(config) {
 	}, true);
 	
 	// on focus lose
+	//var targetdoc = this.config.target.ownerDocument || this.config.target;
+	//var targetwindow = targetdoc.defaultView || targetdoc.parentWindow;
+	
 	window.onblur = function(e) {
 		// release all keys
-		var now = performance.now();
-		for(var i = 0; i < self.keystatesRelease.length; i++) {
-			self.keystatesPress[i] = now;
+		if(self.config.releaseOnBlur) {
+			var now = performance.now();
+			for(var i = 0; i < self.keystatesRelease.length; i++) {
+				self.keystatesPress[i] = now;
+			}
 		}
 	};
 	
 	// try request focus
-	if(this.target.focus) {
-		this.target.focus();
+	if(this.config.requestFocus && this.config.target.focus) {
+		this.config.target.focus();
 	}
 	
 	// constants
