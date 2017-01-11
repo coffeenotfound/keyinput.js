@@ -75,7 +75,10 @@ var KeyInput = function(initconfig) {
 		if(self.config.releaseOnBlur) {
 			var now = self.perfnow();
 			for(var i = 0; i < self.keystatesRelease.length; i++) {
-				self.keystatesPress[i] = now;
+				// only release pressed keys
+				if(self.keystatesPress[i] > self.keystatesRelease[i]) {
+					self.keystatesRelease[i] = now;
+				}
 			}
 		}
 	};
