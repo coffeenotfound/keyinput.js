@@ -14,7 +14,7 @@ var KeyInput = function(initconfig) {
 	this.thispoll = 0;
 	
 	// prime arrays
-	var now = performance.now();
+	var now = this.perfnow();
 	for(var i = 0; i < this.keystatesPress.length; i++) {
 		this.keystatesPress[i] = now;
 		this.keystatesRelease[i] = now;
@@ -33,7 +33,7 @@ var KeyInput = function(initconfig) {
 	this.poll = function() {
 		// set new poll timestamp
 		this.lastpoll = this.thispoll;
-		this.thispoll = performance.now();
+		this.thispoll = this.perfnow();
 	};
 	this.hasFocus = function() {
 		return document.hasFocus();
@@ -52,7 +52,7 @@ var KeyInput = function(initconfig) {
 		if(e.repeat == true) return;
 		
 		// set
-		self.keystatesPress[key] = performance.now();
+		self.keystatesPress[key] = self.perfnow();
 	}, true);
 	
 	// on keyup
@@ -63,7 +63,7 @@ var KeyInput = function(initconfig) {
 		if(key < 112 || key > 123) e.preventDefault();
 		
 		// set
-		self.keystatesRelease[key] = performance.now();
+		self.keystatesRelease[key] = self.perfnow();
 	}, true);
 	
 	// on focus lose
@@ -73,7 +73,7 @@ var KeyInput = function(initconfig) {
 	window.onblur = function(e) {
 		// release all keys
 		if(self.config.releaseOnBlur) {
-			var now = performance.now();
+			var now = self.perfnow();
 			for(var i = 0; i < self.keystatesRelease.length; i++) {
 				self.keystatesPress[i] = now;
 			}
@@ -87,3 +87,16 @@ var KeyInput = function(initconfig) {
 	
 	// constants
 };
+
+// performance.now fallbacks
+KeyInput.prototype.perfnow = (function() {
+	if(performance) {
+		if(performance.now) return function() { return performance.now(); };
+		else if(performance.mozNow) return function() { return performance.mozNow(); };
+		else if(performance.msNow) return function() { return performance.msNow(); };
+		else if(performance.oNow) return function() { return performance.oNow(); };
+		else if(performance.webkitNow) return function() { return performance.webkitNow(); };
+	}
+	// worst case fallback
+	return function() { return new Date().getTime(); };
+})();
