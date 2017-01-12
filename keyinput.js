@@ -16,8 +16,11 @@ var KeyInput = function(initconfig) {
 		handler: null,
 		passive: null,
 		
+		exists: function() {
+			return this.handler == true;
+		},
 		isCapturing: function() {
-			return this.handler && (this.passive == false);
+			return (true == this.handler) && (this.passive == false);
 		},
 		fireEvent: function(event) {
 			this.handler(event);
@@ -170,36 +173,54 @@ var KeyInput = function(initconfig) {
 		var text = self.hiddenInputElement.value;
 		self.hiddenInputElement.value = "";
 		
+		// fire event
+		if(self.currentTextHandler.exists()) {
+			self.currentTextHandler.fireTextEvent(text);
+		}
+		
 		console.log(text);
 	});
-	
-	// handle clipboard commands
-	var supportsOnPaste = false;
-	if("onpaste" in window) {
-		supportsOnPaste = true;
-		document.addEventListener("paste", function(e) {
-			console.log("COMMAND: PASTE");
-		});
-	}
 	
 	// listen for command input
 	document.addEventListener('keydown', function(e) {
 		// ensure focus on hidden input element on keypress
 		self.hiddenInputElement.focus();
 		
-		if(e.ctrlKey && !e.altKey) {
-			var key = e.keyCode;
-			
-			switch(key) {
-				case 13: console.log("COMMAND: ENTER"); break;
-				case 8: console.log("COMMAND: BACKSPACE"); break;
-			}
-			
-			if(!supportsOnPaste && key == 67) {
-				console.log("COMMAND: PASTE");
+		// ignore if no textinputhandler present
+		if(self.currentTextHandler.exists()) {
+			if(e.ctrlKey && !e.altKey) {
+				var key = e.keyCode;
+				
+				switch(key) {
+					case 13:
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 13);
+						console.log("COMMAND: ENTER"); break;
+					case 8:
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 8);
+						console.log("COMMAND: BACKSPACE"); break;
+				}
+				
+				// paste if PasteEvent not supported
+				if(!supportsOnPaste && key == 67) {
+					self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
+					console.log("COMMAND: PASTE");
+				}
 			}
 		}
 	});
+	
+	// handle clipboard command
+	const supportsOnPaste = ("onpaste" in window);
+	if(supportsOnPaste) {
+		document.addEventListener("paste", function(e) {
+			// fire event
+			if(self.currentTextHandler.exists()) {
+				self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: actually put the paste data
+			}
+			
+			console.log("COMMAND: PASTE");
+		});
+	}
 };
 
 // class TextInputEvent
