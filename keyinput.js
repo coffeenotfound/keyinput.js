@@ -20,7 +20,7 @@ var KeyInput = function(initconfig) {
 			return this.handler != null;
 		},
 		isCapturing: function() {
-			return this.exists() && (this.passive == true);
+			return this.exists() && (this.passive == false);
 		},
 		fireEvent: function(event) {
 			this.handler(event);
