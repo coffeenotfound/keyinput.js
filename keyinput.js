@@ -156,18 +156,62 @@ var KeyInput = function(initconfig) {
 		}
 	};
 	
-	// try request focus
-	if(this.config.target.focus && this.config.requestFocus) {
-		this.config.target.focus();
+	// create hidden input element
+	this.hiddenInputElement = document.createElement("input");
+	this.hiddenInputElement.setAttribute("type", "text");
+	this.hiddenInputElement.setAttribute("id", "keyinputjs-textinput");
+	this.hiddenInputElement.style.cssText = "display: none;";
+	document.body.appendChild(this.hiddenInputElement);
+	
+	this.hiddenInputElement.value = "";
+	
+	// listen for text input
+	this.hiddenInputElement.addEventListener('input', function(e) {
+		var text = self.hiddenInputElement.value;
+		self.hiddenInputElement.value = "";
+		
+		console.log(text);
+	});
+	
+	// handle clipboard commands
+	var supportsOnPaste = false;
+	if("onpaste" in window) {
+		supportsOnPaste = true;
+		document.addEventListener("paste", function(e) {
+			console.log("COMMAND: PASTE");
+		});
 	}
+	
+	// listen for command input
+	document.addEventListener('keydown', function(e) {
+		// ensure focus on hidden input element on keypress
+		self.hiddenInputElement.focus();
+		
+		if(e.ctrlKey && !e.altKey) {
+			var key = e.keyCode;
+			
+			switch(key) {
+				case 13: console.log("COMMAND: ENTER"); break;
+				case 8: console.log("COMMAND: BACKSPACE"); break;
+			}
+			
+			if(!supportsOnPaste && key == 67) {
+				console.log("COMMAND: PASTE");
+			}
+		}
+	});
 };
 
 // class TextInputEvent
 KeyInput.TextInputEvent = function(type, text, command, data) {
 	this.type = type;
-	this.text = text;
-	this.command = command;
-	this.data = data;
+	
+	if(text) this.text = text;
+	if(command) this.command = command;
+	if(data) this.data = data;
+};
+KeyInput.prototype = {
+	
 };
 KeyInput.TextInputEvent.newTextEvent = function(text) {
 	return new KeyInput.TextInputEvent(KeyInput.TextInputEvent.TYPE_TEXT, text, null, null);
@@ -185,7 +229,7 @@ KeyInput.TextInputEvent.TYPE_TEXT = 'text';
 KeyInput.TextInputEvent.TYPE_COMMAND = 'command';
 KeyInput.TextInputEvent.COMMAND_BEGININPUT = 'begininput';
 KeyInput.TextInputEvent.COMMAND_ENDINPUT = 'endinput';
-KeyInput.TextInputEvent.COMMAND_BACKSPACE = 'backspace';
+KeyInput.TextInputEvent.COMMAND_ACTION = 'action';
 KeyInput.TextInputEvent.COMMAND_PASTE = 'paste';
 
 // performance.now fallbacks
