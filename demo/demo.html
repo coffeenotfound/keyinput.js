@@ -27,11 +27,16 @@
 <body>
 	<!-- DEMO SCRIPT -->
 	<script>
-		var keyinput = new Keyinput();
+		var keyinput = new KeyInput();
+		
+		// start textinput
+		keyinput.beginTextInput(function(e) {
+			console.log(e);
+		});
 	</script>
 	
 	<header><h1>keyinput.js demo</h1></header>
-	<span id="span"></span>
+	<div></div>
 	<footer><a href="https://github.com/coffeenotfound/keyinput.js">source</a></footer>
 </body>
 </html>
