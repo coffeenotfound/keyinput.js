@@ -244,7 +244,8 @@ KeyInput.TextInputEvent.TYPE_TEXT = 'text';
 KeyInput.TextInputEvent.TYPE_COMMAND = 'command';
 KeyInput.TextInputEvent.COMMAND_BEGININPUT = 'begininput';
 KeyInput.TextInputEvent.COMMAND_ENDINPUT = 'endinput';
-KeyInput.TextInputEvent.COMMAND_ACTION = 'action';
+KeyInput.TextInputEvent.COMMAND_DELETE = 'delete';
+KeyInput.TextInputEvent.COMMAND_ENTER = 'enter';
 KeyInput.TextInputEvent.COMMAND_PASTE = 'paste';
 
 // performance.now fallbacks
