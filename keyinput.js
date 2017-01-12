@@ -65,8 +65,9 @@ var KeyInput = function(initconfig) {
 		if(!handler) return;
 		
 		// send endinput command to previous handler
-		if(this.currentTextHandler.handler) {
-			this.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENDINPUT);
+		var prevhandler = this.getTextInputHandler();
+		if(prevhandler) {
+			prevhandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENDINPUT);
 		}
 		
 		// set current handler
