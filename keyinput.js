@@ -17,10 +17,10 @@ var KeyInput = function(initconfig) {
 		passive: null,
 		
 		exists: function() {
-			return this.handler == true;
+			return this.handler != null;
 		},
 		isCapturing: function() {
-			return (true == this.handler) && (this.passive == false);
+			return this.exists() && (this.passive == true);
 		},
 		fireEvent: function(event) {
 			this.handler(event);
