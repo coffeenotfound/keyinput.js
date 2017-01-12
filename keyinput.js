@@ -187,19 +187,29 @@ var KeyInput = function(initconfig) {
 		
 		// ignore if no textinputhandler present
 		if(self.currentTextHandler.exists()) {
-			if(e.ctrlKey && !e.altKey) {
+			if(!e.altKey) {
 				var key = e.keyCode;
 				
-				switch(key) {
-					case 13:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 13); break;
-					case 8:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 8); break;
+				// !alt && ctrl
+				if(e.ctrlKey) {
+					switch(key) {
+						
+					}
+					
+					// paste if PasteEvent not supported
+					if(!supportsOnPaste && key == 86) {
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
+					}
 				}
 				
-				// paste if PasteEvent not supported
-				if(!supportsOnPaste && key == 67) {
-					self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
+				// !alt
+				switch(key) {
+					// backspace
+					case 8:
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_DELETE, {direction: -1}); break;
+					// enter
+					case 13:
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENTER, null); break;
 				}
 			}
 		}
