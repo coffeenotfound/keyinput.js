@@ -96,8 +96,9 @@ var KeyInput = function(initconfig) {
 		// clear currenthandler
 		this.currentTextHandler.handler = null;
 	};
-	this.getFocusOwner = function() {
-		return (!this.hasFocus() ? null : (this.currentTextHandler.handler || window));
+	/** returns the current textinput handler or null if there is none */
+	this.getTextInputHandler = function() {
+		return this.currentTextHandler.handler;
 	};
 	
 	// private code
