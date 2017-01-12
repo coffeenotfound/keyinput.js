@@ -177,8 +177,6 @@ var KeyInput = function(initconfig) {
 		if(self.currentTextHandler.exists()) {
 			self.currentTextHandler.fireTextEvent(text);
 		}
-		
-		console.log(text);
 	});
 	
 	// listen for command input
@@ -193,17 +191,14 @@ var KeyInput = function(initconfig) {
 				
 				switch(key) {
 					case 13:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 13);
-						console.log("COMMAND: ENTER"); break;
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 13); break;
 					case 8:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 8);
-						console.log("COMMAND: BACKSPACE"); break;
+						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ACTION, 8); break;
 				}
 				
 				// paste if PasteEvent not supported
 				if(!supportsOnPaste && key == 67) {
 					self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
-					console.log("COMMAND: PASTE");
 				}
 			}
 		}
@@ -217,8 +212,6 @@ var KeyInput = function(initconfig) {
 			if(self.currentTextHandler.exists()) {
 				self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: actually put the paste data
 			}
-			
-			console.log("COMMAND: PASTE");
 		});
 	}
 };
