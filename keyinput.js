@@ -163,7 +163,8 @@ var KeyInput = function(initconfig) {
 	this.hiddenInputElement = document.createElement("input");
 	this.hiddenInputElement.setAttribute("type", "text");
 	this.hiddenInputElement.setAttribute("id", "keyinputjs-textinput");
-	this.hiddenInputElement.style.cssText = "display: none;";
+	//this.hiddenInputElement.style.cssText = "display: none;";
+	this.hiddenInputElement.style.cssText = "position: absolute; opacity: 0;"; // display:none and visibility cause input events not to be fired (probably for security reasons)
 	document.body.appendChild(this.hiddenInputElement);
 	
 	this.hiddenInputElement.value = "";
