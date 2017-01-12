@@ -27,17 +27,46 @@
 	<canvas id="testcanvas"></canvas>
 	
 	<textarea id="textarea" readonly></textarea>
+	<input type="checkbox" id="checkbox-enabletextinput"></input> <label for="checkbox-enabletextinput">Enable TextInput</label>
+	<input type="checkbox" id="checkbox-enablepassive"></input> <label for="checkbox-enablepassive">Passive mode</label>
 	
 	<footer><a href="https://github.com/coffeenotfound/keyinput.js">source</a></footer>
 	
 	<!-- DEMO SCRIPT -->
 	<script>
+		// create KeyInput.js
 		var keyinput = new KeyInput();
 		
+		// get elements
 		var textarea = document.getElementById("textarea");
+		var cbEnableTextInput = document.getElementById("checkbox-enabletextinput");
+		var cbEnablePassive = document.getElementById("checkbox-enablepassive");
 		
-		// start textinput
-		keyinput.beginTextInput(function(e) {
+		// checkbox event listeners
+		cbEnableTextInput.addEventListener('change', function(e) {
+			if(cbEnableTextInput.checked) {
+				console.log("begin textinput (passive=" + cbEnablePassive.checked + ")");
+				
+				// start textinput
+				keyinput.beginTextInput(textInputHandler, cbEnablePassive.checked);
+				
+				// disable passive checkbox
+				cbEnablePassive.disabled = true;
+			}
+			else {
+				// end textinput
+				if(keyinput.getFocusOwner() == textInputHandler) {
+					keyinput.endTextInput();
+					console.log("end textinput");
+				}
+				
+				// enable passive checkbox
+				cbEnablePassive.disabled = false;
+			}
+		});
+		
+		// textinputhandler
+		var textInputHandler = function(e) {
 			console.log(e);
 			
 			if(e.type == KeyInput.TextInputEvent.TYPE_TEXT) {
@@ -57,7 +86,7 @@
 						break;
 				}
 			}
-		});
+		};
 	</script>
 </body>
 </html>
