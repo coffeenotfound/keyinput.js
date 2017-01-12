@@ -16,22 +16,77 @@
 			width: 100%;
 			min-height: 100%;
 		}
-		#key {
-			
-		}
 	</style>
 	
 	<script src="../keyinput.js"></script>
 </head>
 
 <body>
+	<header><h1>keyinput.js demo</h1></header>
+	
+	<canvas id="testcanvas"></canvas>
+	
+	<textarea id="textarea" readonly></textarea>
+	<input type="checkbox" id="checkbox-enabletextinput"></input> <label for="checkbox-enabletextinput">Enable TextInput</label>
+	<input type="checkbox" id="checkbox-enablepassive"></input> <label for="checkbox-enablepassive">Passive mode</label>
+	
+	<footer><a href="https://github.com/coffeenotfound/keyinput.js">source</a></footer>
+	
 	<!-- DEMO SCRIPT -->
 	<script>
-		var keyinput = new Keyinput();
+		// create KeyInput.js
+		var keyinput = new KeyInput();
+		
+		// get elements
+		var textarea = document.getElementById("textarea");
+		var cbEnableTextInput = document.getElementById("checkbox-enabletextinput");
+		var cbEnablePassive = document.getElementById("checkbox-enablepassive");
+		
+		// checkbox event listeners
+		cbEnableTextInput.addEventListener('change', function(e) {
+			if(cbEnableTextInput.checked) {
+				console.log("begin textinput (passive=" + cbEnablePassive.checked + ")");
+				
+				// start textinput
+				keyinput.beginTextInput(textInputHandler, cbEnablePassive.checked);
+				
+				// disable passive checkbox
+				cbEnablePassive.disabled = true;
+			}
+			else {
+				// end textinput
+				if(keyinput.getTextInputHandler() == textInputHandler) {
+					keyinput.endTextInput();
+					console.log("end textinput");
+				}
+				
+				// enable passive checkbox
+				cbEnablePassive.disabled = false;
+			}
+		});
+		
+		// textinputhandler
+		var textInputHandler = function(e) {
+			console.log(e);
+			
+			if(e.type == KeyInput.TextInputEvent.TYPE_TEXT) {
+				textarea.value += e.text;
+			}
+			else if(e.type == KeyInput.TextInputEvent.TYPE_COMMAND) {
+				switch(e.command) {
+					// backspace
+					case KeyInput.TextInputEvent.COMMAND_DELETE:
+						if(textarea.value.length > 0) {
+							textarea.value = textarea.value.substring(0, textarea.value.length + e.data.direction);
+						}
+						break;
+					// enter
+					case KeyInput.TextInputEvent.COMMAND_ENTER:
+						textarea.value += "\n";
+						break;
+				}
+			}
+		};
 	</script>
-	
-	<header><h1>keyinput.js demo</h1></header>
-	<span id="span"></span>
-	<footer><a href="https://github.com/coffeenotfound/keyinput.js">source</a></footer>
 </body>
 </html>
