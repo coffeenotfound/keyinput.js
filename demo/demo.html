@@ -26,15 +26,37 @@
 	
 	<canvas id="testcanvas"></canvas>
 	
+	<textarea id="textarea" readonly></textarea>
+	
 	<footer><a href="https://github.com/coffeenotfound/keyinput.js">source</a></footer>
 	
 	<!-- DEMO SCRIPT -->
 	<script>
 		var keyinput = new KeyInput();
 		
+		var textarea = document.getElementById("textarea");
+		
 		// start textinput
 		keyinput.beginTextInput(function(e) {
 			console.log(e);
+			
+			if(e.type == KeyInput.TextInputEvent.TYPE_TEXT) {
+				textarea.value += e.text;
+			}
+			else if(e.type == KeyInput.TextInputEvent.TYPE_COMMAND) {
+				switch(e.command) {
+					// backspace
+					case KeyInput.TextInputEvent.COMMAND_DELETE:
+						if(textarea.value.length > 0) {
+							textarea.value = textarea.value.substring(0, textarea.value.length + e.data.direction);
+						}
+						break;
+					// enter
+					case KeyInput.TextInputEvent.COMMAND_ENTER:
+						textarea.value += "\n";
+						break;
+				}
+			}
 		});
 	</script>
 </body>
