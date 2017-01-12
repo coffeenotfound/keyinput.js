@@ -110,8 +110,14 @@ var KeyInput = function(initconfig) {
 		if(dokeyinput) {
 			var key = e.keyCode;
 			
+			/*
+			// prevent default on 'keydown' causes 'input' events not to fire
+			// TODO: figure out way to prevent tabbing while still typing a tab
+			//		-> prevent tab and fire input event manually?
+			
 			// allow f keys
 			if(key < 112 || key > 123) e.preventDefault();
+			*/
 			
 			// ignore repeat (if implemented)
 			if(e.repeat == true) return;
@@ -128,8 +134,10 @@ var KeyInput = function(initconfig) {
 		if(dokeyinput) {
 			var key = e.keyCode;
 			
+			/*
 			// allow f keys
 			if(key < 112 || key > 123) e.preventDefault();
+			*/
 			
 			// set
 			self.keystatesRelease[key] = self.perfnow();
