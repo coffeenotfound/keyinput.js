@@ -97,7 +97,7 @@ var KeyInput = function(initconfig) {
 		this.currentTextHandler.handler = null;
 	};
 	this.getFocusOwner = function() {
-		return (!hasFocus() ? null : (currentTextHandler.handler || window));
+		return (!this.hasFocus() ? null : (this.currentTextHandler.handler || window));
 	};
 	
 	// private code
