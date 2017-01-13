@@ -189,6 +189,13 @@ var KeyInput = function(initconfig) {
 		// ensure focus on hidden input element on keypress
 		self.hiddenInputElement.focus();
 		
+		var _fillOutControlKeys = function(te, e) {
+			te.shiftKey = e.shiftKey || false;
+			te.ctrlKey = e.ctrlKey || false;
+			te.altKey = e.altKey || false;
+			te.metaKey = e.metaKey || false;
+		};
+		
 		// ignore if no textinputhandler present
 		if(self.currentTextHandler.exists()) {
 			if(!e.altKey) {
@@ -212,11 +219,13 @@ var KeyInput = function(initconfig) {
 					// backspace
 					case 8:
 						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_DELETE, {direction: -1});
+						_fillOutControlKeys(te, e);
 						self.currentTextHandler.fireEvent(te);
 						break;
 					// enter
 					case 13:
 						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_ENTER, null);
+						_fillOutControlKeys(te, e);
 						self.currentTextHandler.fireEvent(te);
 						break;
 				}
@@ -258,6 +267,12 @@ KeyInput.TextInputEvent.newCommandEvent = function(cause, when, command, data) {
 };
 KeyInput.TextInputEvent.prototype = {
 	when: null, // timestamp
+	
+	shiftKey: null,
+	ctrlKey: null,
+	altKey: null,
+	metaKey: null,
+	
 	type: null, // type of event, either TYPE_TEXT or TYPE_COMMAND
 	text: null, // input text if type==TYPE_TEXT
 	command: null, // input command if type==TYPE_COMMAND
