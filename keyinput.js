@@ -68,7 +68,8 @@ var KeyInput = function(initconfig) {
 		
 		// send endinput command to previous handler
 		if(this.currentTextHandler.exists()) {
-			this.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENDINPUT);
+			var te = KeyInput.TextInputEvent.newCommandEvent(null, self.perfnow(), KeyInput.TextInputEvent.COMMAND_ENDINPUT, null);
+			this.currentTextHandler.fireEvent(te);
 		}
 		
 		// set current handler
@@ -87,13 +88,15 @@ var KeyInput = function(initconfig) {
 		}
 		
 		// send begininput command
-		this.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_BEGININPUT);
+		var te = KeyInput.TextInputEvent.newCommandEvent(null, self.perfnow(), KeyInput.TextInputEvent.COMMAND_BEGININPUT, null);
+		this.currentTextHandler.fireEvent(te);
 	};
 	this.endTextInput = function() {
 		if(!this.currentTextHandler.handler) return;
 		
 		// send endinput event
-		this.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENDINPUT);
+		var te = KeyInput.TextInputEvent.newCommandEvent(null, self.perfnow(), KeyInput.TextInputEvent.COMMAND_ENDINPUT, null);
+		this.currentTextHandler.fireEvent(te);
 		
 		// clear currenthandler
 		this.currentTextHandler.handler = null;
@@ -176,7 +179,8 @@ var KeyInput = function(initconfig) {
 		
 		// fire event
 		if(self.currentTextHandler.exists()) {
-			self.currentTextHandler.fireTextEvent(text);
+			var te = KeyInput.TextInputEvent.newTextEvent(e, self.perfnow(), text);
+			self.currentTextHandler.fireEvent(te);
 		}
 	});
 	
@@ -198,7 +202,8 @@ var KeyInput = function(initconfig) {
 					
 					// paste if PasteEvent not supported
 					if(!supportsOnPaste && key == 86) {
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: put paste data
+						self.currentTextHandler.fireEvent(te);
 					}
 				}
 				
@@ -206,10 +211,14 @@ var KeyInput = function(initconfig) {
 				switch(key) {
 					// backspace
 					case 8:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_DELETE, {direction: -1}); break;
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_DELETE, {direction: -1});
+						self.currentTextHandler.fireEvent(te);
+						break;
 					// enter
 					case 13:
-						self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_ENTER, null); break;
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_ENTER, null);
+						self.currentTextHandler.fireEvent(te);
+						break;
 				}
 			}
 		}
@@ -221,16 +230,19 @@ var KeyInput = function(initconfig) {
 		document.addEventListener("paste", function(e) {
 			// fire event
 			if(self.currentTextHandler.exists()) {
-				self.currentTextHandler.fireCommandEvent(KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: actually put the paste data
+				var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_PASTE, null); // TODO: actually put the paste data
+				self.currentTextHandler.fireEvent(te);
 			}
 		});
 	}
 };
 
 // class TextInputEvent
-KeyInput.TextInputEvent = function(type, text, command, data) {
-	this.type = type;
+KeyInput.TextInputEvent = function(cause, when, type, text, command, data) {
+	this.cause = cause;
+	this.when = when;
 	
+	this.type = type;
 	if(text) this.text = text;
 	if(command) this.command = command;
 	if(data) this.data = data;
@@ -238,13 +250,14 @@ KeyInput.TextInputEvent = function(type, text, command, data) {
 KeyInput.prototype = {
 	
 };
-KeyInput.TextInputEvent.newTextEvent = function(text) {
-	return new KeyInput.TextInputEvent(KeyInput.TextInputEvent.TYPE_TEXT, text, null, null);
+KeyInput.TextInputEvent.newTextEvent = function(cause, when, text) {
+	return new KeyInput.TextInputEvent(cause, when, KeyInput.TextInputEvent.TYPE_TEXT, text, null, null);
 };
-KeyInput.TextInputEvent.newCommandEvent = function(command, data) {
-	return new KeyInput.TextInputEvent(KeyInput.TextInputEvent.TYPE_COMMAND, null, command, data || null);
+KeyInput.TextInputEvent.newCommandEvent = function(cause, when, command, data) {
+	return new KeyInput.TextInputEvent(cause, when, KeyInput.TextInputEvent.TYPE_COMMAND, null, command, data || null);
 };
 KeyInput.TextInputEvent.prototype = {
+	when: null, // timestamp
 	type: null, // type of event, either TYPE_TEXT or TYPE_COMMAND
 	text: null, // input text if type==TYPE_TEXT
 	command: null, // input command if type==TYPE_COMMAND
