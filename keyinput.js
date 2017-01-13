@@ -25,6 +25,7 @@ var KeyInput = function(initconfig) {
 		fireEvent: function(event) {
 			this.handler(event);
 		},
+		/*
 		fireTextEvent: function(text) {
 			var te = KeyInput.TextInputEvent.newTextEvent(text);
 			this.fireEvent(te);
@@ -33,6 +34,7 @@ var KeyInput = function(initconfig) {
 			var te = KeyInput.TextInputEvent.newCommandEvent(command, data);
 			this.fireEvent(te);
 		},
+		*/
 	};
 	
 	// prime arrays
