@@ -266,6 +266,7 @@ KeyInput.TextInputEvent.newCommandEvent = function(cause, when, command, data) {
 	return new KeyInput.TextInputEvent(cause, when, KeyInput.TextInputEvent.TYPE_COMMAND, null, command, data || null);
 };
 KeyInput.TextInputEvent.prototype = {
+	cause: null,
 	when: null, // timestamp
 	
 	shiftKey: null,
