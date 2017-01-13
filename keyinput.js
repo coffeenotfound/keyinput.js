@@ -228,6 +228,27 @@ var KeyInput = function(initconfig) {
 						_fillOutControlKeys(te, e);
 						self.currentTextHandler.fireEvent(te);
 						break;
+					
+					// up
+					case 38:
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_CURSOR, { moveX: 0, moveY: -1 });
+						_fillOutControlKeys(te, e);
+						self.currentTextHandler.fireEvent(te); break;
+					// down
+					case 40:
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_CURSOR, { moveX: 0, moveY: 1 });
+						_fillOutControlKeys(te, e);
+						self.currentTextHandler.fireEvent(te); break;
+					// left
+					case 37:
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_CURSOR, { moveX: -1, moveY: 0 });
+						_fillOutControlKeys(te, e);
+						self.currentTextHandler.fireEvent(te); break;
+					// right
+					case 39:
+						var te = KeyInput.TextInputEvent.newCommandEvent(e, self.perfnow(), KeyInput.TextInputEvent.COMMAND_CURSOR, { moveX: 1, moveY: 0 });
+						_fillOutControlKeys(te, e);
+						self.currentTextHandler.fireEvent(te); break;
 				}
 			}
 		}
@@ -286,6 +307,7 @@ KeyInput.TextInputEvent.COMMAND_ENDINPUT = 'endinput';
 KeyInput.TextInputEvent.COMMAND_DELETE = 'delete';
 KeyInput.TextInputEvent.COMMAND_ENTER = 'enter';
 KeyInput.TextInputEvent.COMMAND_PASTE = 'paste';
+KeyInput.TextInputEvent.COMMAND_CURSOR = 'cursor';
 
 // performance.now fallbacks
 KeyInput.prototype.perfnow = (function() {
