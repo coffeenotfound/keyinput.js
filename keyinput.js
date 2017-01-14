@@ -110,7 +110,7 @@ var KeyInput = function(initconfig) {
 	
 	// on keydown
 	this.config.target.addEventListener('keydown', function(e) {
-		var dokeyinput = self.currentTextHandler.handler ? self.currentTextHandler.passive : false;
+		var dokeyinput = !self.currentTextHandler.isCapturing();
 		
 		if(dokeyinput) {
 			var key = e.keyCode;
@@ -134,7 +134,7 @@ var KeyInput = function(initconfig) {
 	
 	// on keyup
 	this.config.target.addEventListener('keyup', function(e) {		
-		var dokeyinput = self.currentTextHandler.handler ? self.currentTextHandler.passive : false;
+		var dokeyinput = !self.currentTextHandler.isCapturing();
 		
 		if(dokeyinput) {
 			var key = e.keyCode;
