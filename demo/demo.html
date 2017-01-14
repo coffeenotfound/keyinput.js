@@ -42,6 +42,29 @@
 		var cbEnableTextInput = document.getElementById("checkbox-enabletextinput");
 		var cbEnablePassive = document.getElementById("checkbox-enablepassive");
 		
+		// create textboxcontrol
+		var textboxcontrol = new TextBoxControl();
+		keyinput.beginTextInput(textboxcontrol.texteventhandler);
+		
+		// draw ascii text box
+		textboxcontrol.addChangeListener(function(e) {
+			var text = "";
+			
+			for(var y = 0; y < e.control.text.length; y++) {
+				var line = e.control.text[y] || "";
+				
+				if(e.control.cursor.y == y) {
+					text += line.substring(0, e.control.cursor.x) + ":" + line.substring(e.control.cursor.x, line.length);
+				}
+				else {
+					text += line;
+				}
+				text += '\n';
+			}
+			
+			textarea.value = text;
+		});
+		
 		// checkbox event listeners
 		cbEnableTextInput.addEventListener('change', function(e) {
 			if(cbEnableTextInput.checked) {
