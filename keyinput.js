@@ -309,6 +309,125 @@ KeyInput.TextInputEvent.COMMAND_ENTER = 'enter';
 KeyInput.TextInputEvent.COMMAND_PASTE = 'paste';
 KeyInput.TextInputEvent.COMMAND_CURSOR = 'cursor';
 
+var TextBoxControl = function(config) {
+	//this.config = config || {};
+	self = this;
+};
+TextBoxControl.prototype = {
+	self,
+	maxLines: 4,
+	
+	text: [""], // text split by lines
+	cursor: {x:0, y:0},
+	selection: {start:-1, end:-1},
+	
+	changeListeners: [],
+	_notifyChange: function(e) {
+		e.control = this;
+		for(var i = 0; i < self.changeListeners.length; i++) {
+			if(self.changeListeners[i]) {
+				self.changeListeners[i](e);
+			}
+		}
+	},
+	
+	// text input handler
+	texteventhandler: function(te) {
+		if(te.type == KeyInput.TextInputEvent.TYPE_TEXT) {
+			self.type(te.text);
+		}
+		else {
+			switch(te.command) {
+				// move cursor
+				case KeyInput.TextInputEvent.COMMAND_CURSOR:
+					self.moveCursor(te.data.moveX, te.data.moveY);
+					break;
+				// newline
+				case KeyInput.TextInputEvent.COMMAND_ENTER:
+					self.typeNewLine();
+					break;
+			}
+		}
+	},
+	
+	// "internal functions"
+	type: function(text) {
+		// type at cursor
+		var line = self.text[self.cursor.y] || "";
+		var newLine = line.substring(0, self.cursor.x) + text + line.substring(self.cursor.x, line.length);
+		self.text[self.cursor.y] = newLine;
+		
+		// move cursor
+		self.moveCursor(text.length, 0);
+		
+		// fire change event
+		self._notifyChange({ text: true });
+	},
+	typeNewLine: function() {
+		self.moveCursor(0, 1);
+	},
+	erase: function() {
+		/*
+		var line = self.text[self.cursor.y] || "";
+		
+		// collapse line
+		if(self.cursor.x - 1 < 0) {
+			self.cursor.y
+		}
+		
+		// fire change event
+		self._notifyChange({ text: true });
+		*/
+	},
+	moveCursor: function(x, y) {
+		// add
+		self.cursor.x += x;
+		self.cursor.y += y;
+		
+		// clamp y
+		if(self.cursor.y < 0) self.cursor.y = 0;
+		if(self.cursor.y >= self.maxLines) self.cursor.y = self.maxLines - 1;
+		
+		// ensure line exists
+		if(!self.text[self.cursor.y]) {
+			self.text[self.cursor.y] = "";
+		}
+		
+		// preclamp x
+		if(y < 0) {
+			self.cursor.x = Math.min(self.cursor.x, self.text[self.cursor.y].length);
+		}
+		
+		// clamp x
+		if(self.cursor.x < 0) {
+			if(self.cursor.y > 0) {
+				self.cursor.y--;
+				self.cursor.x = (self.text[self.cursor.y] || "").length;
+			}
+			else {
+				self.cursor.x = 0;
+			}
+		}
+		if(self.cursor.x > (self.text[self.cursor.y] || "").length) {
+			if(self.cursor.y < self.text.length - 1) {
+				self.cursor.y++;
+				self.cursor.x = 0;
+			}
+			else {
+				self.cursor.x = (self.text[self.cursor.y] || "").length;
+			}
+		}
+		
+		// fire change event
+		self._notifyChange({ cursor: true });
+	},
+	
+	// callbacks
+	addChangeListener: function(f) {
+		self.changeListeners.push(f);
+	},
+};
+
 // performance.now fallbacks
 KeyInput.prototype.perfnow = (function() {
 	if(performance) {
